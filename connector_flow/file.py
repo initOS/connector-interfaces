@@ -31,7 +31,7 @@ class ImpExpFile(models.Model):
                 ('failed', 'Failed'),
                 ('done', 'Done')]
 
-    attachment_id = fields.Many2one('ir.attachment', string='Attachment',
+    attachment_id = fields.Many2one('ir.attachment.metadata', string='Attachment',
                                     required=True)
     task_id = fields.Many2one('impexp.task', string='Task')
     state = fields.Selection(string='State', selection='_states',

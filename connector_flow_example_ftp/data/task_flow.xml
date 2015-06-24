@@ -30,7 +30,7 @@
 
         <record model="impexp.task" id="task_partner_to_ftp_3">
             <field name="name">res.partner to FTP, part 3 (CSV to FTP)</field>
-            <field name="task">ftp_upload</field>
+            <field name="task">file_export</field>
             <field name="flow_id" ref="task_partner_to_ftp_flow"/>
         </record>
 

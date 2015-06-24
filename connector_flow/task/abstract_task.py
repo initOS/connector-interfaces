@@ -52,7 +52,7 @@ class AbstractTask(object):
         return retval
 
     def create_file(self, filename, data):
-        ir_attachment = self.session.env['ir.attachment'].\
+        ir_attachment = self.session.env['ir.attachment.metadata'].\
             create({'name': filename,
                     'datas': b64encode(data),
                     'datas_fname': filename})
