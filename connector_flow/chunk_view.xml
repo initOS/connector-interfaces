@@ -2,26 +2,76 @@
 <openerp>
     <data>
 
+        <record model="ir.ui.view" id="chunk_tree">
+            <field name="name">impexp.chunk.tree</field>
+            <field name="model">impexp.chunk</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Chunk Tree">
+                    <field name="create_date"/>
+                    <field name="name"/>
+                    <field name="data"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        
         <record model="ir.ui.view" id="chunk_form_view">
             <field name="name">impexp.chunk.form.view</field>
             <field name="model">impexp.chunk</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <form string="Task Form" version="7.0" create='false'>
+                <form string="Chunk Form" version="7.0" create='false'>
                     <sheet>
                         <group>
                             <group>
                                 <field name="name" readonly="1"/>
-                                <field name="data" attrs="{'readonly': [('state', 'in', ['failed', 'done'])]}"/>
+                                <field name="data" attrs="{'readonly': [('state', 'in', ['done'])]}"/>
+                                <field name="state" readonly="1"/>
                             </group>
                             <group>
-                                <field name="state" readonly="1"/>
+                                <field name="task_id"/>
+                                <field name="file_id"/>
+                                <field name="last_task_id"/>
                             </group>
                         </group>
                     </sheet>
                 </form>
             </field>
         </record>
+        
+        <record id="chunk_search_view" model="ir.ui.view">
+            <field name="name">impexp.chunk.search.view</field>
+            <field name="model">impexp.chunk</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="Search Chunks">
+                    <field name="data" string="Data"/>
+                    <separator/>
+                    <filter name="toreview" domain="[('state','in',['todo','failed'])]" help="To review"/>
+                    <group expand="0" string="Group By">
+                    	<filter string="State" context="{'group_by':'state'}"/>
+                        <filter string="Date" context="{'group_by':'create_date:month'}"/>
+                    </group>
+               </search>
+            </field>
+        </record>
+        
+        <record model="ir.actions.act_window" id="chunk_view_action">
+            <field name="name">Chunks</field>
+            <field name="res_model">impexp.chunk</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="chunk_tree"/>
+            <field name="target">current</field>
+            <field name="search_view_id" ref="chunk_search_view"/>
+            <field name="context">{'search_default_toreview':1}</field>
+        </record>
+
+        <menuitem id="menu_impexp_chunk"
+                  name="Chunks"
+                  parent="menu_impexp_root"
+                  action="chunk_view_action"/>
 
     </data>
 </openerp>

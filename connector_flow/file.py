@@ -28,6 +28,7 @@ class ImpExpFile(models.Model):
     @api.model
     def _states(self):
         return [('new', 'New'),
+                ('todo', 'To do'),
                 ('failed', 'Failed'),
                 ('done', 'Done')]
 

@@ -19,9 +19,9 @@
 ##############################################################################
 
 from openerp import models, fields, api, exceptions, _
-
 from openerp.addons.connector.queue.job import job, related_action
 from openerp.addons.connector.session import ConnectorSession
+from openerp.exceptions import except_orm, Warning, RedirectWarning
 from ast import literal_eval
 
 
@@ -53,6 +53,18 @@ class ImpExpTaskFlow(models.Model):
     task_ids = fields.One2many('impexp.task', 'flow_id',
                                string='Tasks in Flow')
 
+    @api.multi
+    def write(self, vals):
+        res = super(ImpExpTaskFlow, self).write(vals)
+        tran_obj = self.env['impexp.task.transition']
+        for task in self.task_ids:
+            # if there are no transitions, we create them lineally
+            post = task.search([('id', 'in', self.task_ids.ids), ('id', '>', task.id)])
+            if not task.transitions_out_ids and post:
+                post_tran = tran_obj.create({'task_to_id': post[0].id,
+                                             'task_from_id': task.id})
+        return res
+
 
 class ImpExpTask(models.Model):
     _name = 'impexp.task'
@@ -79,6 +91,9 @@ class ImpExpTask(models.Model):
                                          'task_to_id',
                                          string='Incoming Transitions')
     flow_start = fields.Boolean(string='Start of a Task Flow')
+    map_id = fields.Many2one('impexp.map', string='Data map')
+    config_id = fields.Many2one('impexp.config', string='Config.')
+    flow_pause = fields.Boolean(string='Pause the flow?')
 
     @api.one
     @api.constrains('flow_start', 'flow_id')
@@ -98,10 +113,34 @@ class ImpExpTask(models.Model):
     def _config(self):
         """Parse task configuration"""
         self.ensure_one()
-        config = self.config
-        if config:
-            return literal_eval(config)
-        return {}
+        if self.config_id:
+            config = {}
+            config['encoding'] = self.config_id.encoding or 'utf-8'
+            config['includes_header'] = self.config_id.title_row
+            config['delimiter'] = str(self.config_id.delimiter or '')
+            config['quotechar'] = str(self.config_id.quotechar or '')
+            config['lineterminator'] = str(self.config_id.lineterminator or '')
+            config['ftp'] = {}
+            config['ftp']['host'] = self.config_id.ftp_host or ''
+            config['ftp']['port'] = self.config_id.ftp_port or '21'
+            config['ftp']['user'] = self.config_id.ftp_user or ''
+            config['ftp']['password'] = self.config_id.ftp_password or ''
+            config['ftp']['download_directory'] = self.config_id.ftp_download_directory or ''
+            config['ftp']['move_directory'] = self.config_id.ftp_move_directory or ''
+            config['ftp']['file_names'] = self.config_id.ftp_file_names or ''
+            config['ftp']['delete_files'] = self.config_id.ftp_delete_files
+            config['url'] = {}
+            config['url']['url'] = self.config_id.url or ''
+            return config
+        else:
+            config = self.config
+            if config:
+                try:
+                    return literal_eval(config)
+                except:
+                    raise except_orm(_('The configuration is wrong'))
+            else:
+                return {}
 
     @api.multi
     def do_run(self, async=True, **kwargs):
@@ -129,7 +168,7 @@ class ImpExpTask(models.Model):
                 start_task = task
                 break
         if not start_task:
-            raise Exception(_('Flow %d has no start') % flow_id)
+            raise except_orm(_('Flow %d has no start') % flow_id)
         return start_task.do_run(**kwargs)
 
     @api.multi

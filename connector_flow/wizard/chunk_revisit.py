@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    Copyright (C) 2014 initOS GmbH & Co. KG (<http://www.initos.com>).
-#
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
 #    published by the Free Software Foundation, either version 3 of the
@@ -20,23 +18,28 @@
 
 from openerp import models, fields, api
 
+class ChunkRevisit(models.TransientModel):
+    """
+    This wizard will relaunch the chunks
+    """
+    _name = "chunk.revisit"
+    _description = "Relaunch chunks"
 
-class ImpExpChunk(models.Model):
-    _name = 'impexp.chunk'
-    _description = ('Structured (parsed) data from a file'
-                    ' to be imported/exported')
+    async = fields.Boolean(string='Run Asynchronously', default=True)
 
-    @api.model
-    def _states(self):
-        return [('new', 'New'),
-                ('todo', 'To do'),
-                ('failed', 'Failed'),
-                ('done', 'Done')]
+    @api.multi
+    def relaunch_chunk(self):
+        self.ensure_one()
+        chunk_ids = self.env.context.get('active_ids')
+        assert chunk_ids
+        for chunk in self.env['impexp.chunk'].browse(chunk_ids):
+            if chunk.last_task_id:
+                task = chunk.last_task_id
+            elif chunk.file_id.task_id:
+                task = chunk.file_id.task_id
+            if task:
+                task_instance = task.get_task_instance()
+                #TODO: add async to wizard
+                task_instance.run_successor_tasks(chunk_id=chunk.id, async=self.async, revisit=True)
 
-    file_id = fields.Many2one('impexp.file', string='File')
-    name = fields.Char(string='Name', required=True)
-    data = fields.Text(string='Data', required=True)
-    task_id = fields.Many2one(string='Related Task', related='file_id.task_id')
-    state = fields.Selection(string='State', selection='_states',
-                             default='new')
-    last_task_id = fields.Many2one('impexp.task', string='Last Task', help='The last task processed properly')
+        return {'type': 'ir.actions.act_window_close'}

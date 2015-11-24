@@ -19,6 +19,8 @@
                         <button name="run_task" string="Run Task" type="object" class="oe_highlight"/>
                         or
                         <button string="Cancel" class="oe_link" special="cancel"/>
+                        or
+                        <button name="cron_task" string="Cron Task" type="object"/>
                     </footer>
                 </form>
             </field>

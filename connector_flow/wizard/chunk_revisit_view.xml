@@ -1,0 +1,36 @@
+<openerp>
+    <data>
+
+        <record id="chunk_revisit_view" model="ir.ui.view">
+            <field name="name">chunk.revisit.form</field>
+            <field name="model">chunk.revisit</field>
+            <field name="arch" type="xml">
+                <form string="Relaunch chunk" version="7.0">
+                    <group>
+                        <field name="async"/>
+                    </group>
+                    <footer>
+                        <button string="Relaunch chunk" name="relaunch_chunk" type="object" default_focus="1" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_chunk_revisit" model="ir.actions.act_window">
+            <field name="name">Relaunch chunks</field>
+            <field name="res_model">chunk.revisit</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="chunk_revisit_view"/>
+            <field name="target">new</field>
+        </record>
+
+        <act_window id="action_chunk_revisit"
+            multi="True"
+            key2="client_action_multi" name="Relaunch chunks"
+            res_model="chunk.revisit" src_model="impexp.chunk"
+            view_mode="form" target="new" view_type="form" />
+    </data>
+</openerp>

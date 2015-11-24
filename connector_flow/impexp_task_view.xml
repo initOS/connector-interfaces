@@ -25,6 +25,8 @@
                         <group>
                             <field name="name"/>
                             <field name="task"/>
+                            <field name="map_id" attrs="{'invisible': [('task', '!=', 'configurable_import')]}"/>
+                            <field name="config_id"/>
                             <field name="max_retries"/>
                             <field name="flow_id"/>
                             <field name="flow_start"/>

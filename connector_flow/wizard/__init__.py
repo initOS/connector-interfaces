@@ -19,3 +19,5 @@
 ##############################################################################
 
 from . import run_task
+from . import cron_task
+from . import chunk_revisit

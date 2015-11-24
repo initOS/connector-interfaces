@@ -44,6 +44,20 @@ class AbstractTask(object):
         raise Exception("Not Implemented")
 
     def run_successor_tasks(self, **kwargs):
+        if kwargs.get('chunk_id', False):
+            #if we come with a chunk, we write the last task
+            chunk = self.session.env['impexp.chunk'].browse(kwargs.get('chunk_id'))
+            chunk.write({'last_task_id': self._id})
+        if not kwargs.pop('revisit', True):
+            if self.session.env['impexp.task'].search_read([('id', '=', self._id)], ['flow_pause'])[0]['flow_pause']:
+                #mark the chunk or file as todo
+                if kwargs.get('chunk_id', False):
+                    chunk = self.session.env['impexp.chunk'].browse(kwargs.get('chunk_id'))
+                    chunk.write({'state': 'todo'})
+                elif kwargs.get('file_id', False):
+                    file = self.session.env['impexp.file'].browse(kwargs.get('chunk_id'))
+                    file.write({'state': 'todo'})
+                return None
         successors = self.session.env['impexp.task.transition'].\
             search_read([('task_from_id', '=', self._id)], ['task_to_id'])
         retval = None
@@ -88,13 +102,14 @@ class AbstractChunkReadTask(AbstractTask):
         chunk = self.session.env['impexp.chunk'].browse(chunk_id)
         chunk_data = chunk.data
         kwargs['chunk_data'] = simplejson.loads(chunk_data)
-        new_state = 'failed'
+        kwargs['chunk_id'] = chunk_id
+        kwargs['task_id'] = self._id
         result = None
         try:
             result = self.read_chunk(**kwargs)
             new_state = 'done'
         except:
-            raise
+            new_state = 'failed'
         finally:
             chunk.write({'state': new_state})
         return result

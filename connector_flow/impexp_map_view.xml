@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <!-- impexp.map -->
+
+        <record model="ir.ui.view" id="map_tree">
+            <field name="name">impexp.map.tree</field>
+            <field name="model">impexp.map</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Map Tree">
+                    <field name="name"/>
+                    <field name="target_model_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="map_form">
+            <field name="name">impexp.map.form</field>
+            <field name="model">impexp.map</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Map Form">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="type"/>
+                            </group>
+                            <group>
+                                <field name="target_model_id"/>
+                                <field name="decimals_separator"/>
+                                <field name="thousands_separator"/>
+                            </group>
+                        </group>
+                        <group string="Fields">
+                            <field name="field_ids" nolabel="1">
+                                <tree>
+                                    <field name="position"/>
+                                    <field name="pk"/>
+                                    <field name="type"/>
+                                    <field name="target_field_id"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <group>
+                                            <field name="position"/>
+                                            <field name="type"/>
+                                            <field name="chars_to_delete"/>
+                                        </group>
+                                        <group>
+                                            <field name="pk"/>
+                                            <field name="target_field_id" domain="[('model_id', '=', parent.target_model_id), ('ttype', '!=', 'many2many')]"/>
+                                            <field name="target_model_id"/>
+                                            <field name="field_type"/>
+                                            <field name="related_field_model"/>
+                                        </group>
+                                    </group>
+                                    <group>
+                                        <field name="value"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- menu and window actions -->
+
+        <record model="ir.actions.act_window" id="map_view_action">
+            <field name="name">Maps</field>
+            <field name="res_model">impexp.map</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="map_tree"/>
+            <field name="target">current</field>
+        </record>
+
+        <menuitem id="menu_impexp_map"
+                  name="Maps"
+                  parent="menu_impexp_root"
+                  action="map_view_action"/>
+
+    </data>
+</openerp>

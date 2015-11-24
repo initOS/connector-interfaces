@@ -54,8 +54,11 @@ class TableRowImport(AbstractTask):
                 continue
             name = '%s, line %d' % (file.attachment_id.datas_fname, lineno)
             data = row
+            # commented because we need the order, and not all the files come with header
+            """
             if header:
                 data = dict(zip(header, data))
+            """
             chunk_id = self.session.create('impexp.chunk',
                                            {'name': name,
                                             'data': simplejson.dumps(data),
@@ -72,10 +75,13 @@ class CsvImport(TableRowImport):
 
     def _row_generator(self, file_data, config=None):
         encoding = config.get('encoding', 'utf-8')
+        delimiter = config.get('delimiter', ';')
+        quotechar = config.get('quotechar', '"')
+        lineterminator = config.get('lineterminator', '\n')
         data = file_data.decode(encoding)\
                         .encode('utf-8')\
-                        .split("\n")
-        return csv.reader(data)
+                        .split(lineterminator)  # we apply the line before the reader
+        return csv.reader(data, delimiter=delimiter, quotechar=quotechar)
 
 
 class CsvImportTask(models.Model):

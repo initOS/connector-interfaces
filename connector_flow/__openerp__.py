@@ -30,13 +30,17 @@
         'connector',
     ],
     'external_dependencies': {
-        'python': ['ftputil'],
+        'python': ['ftputil', 'csv'],
     },
     'data': [
         'impexp_task_view.xml',
+        'impexp_map_view.xml',
+        'config_view.xml',
         'file_view.xml',
         'chunk_view.xml',
         'wizard/run_task_view.xml',
+        'wizard/cron_task_view.xml',
+        'wizard/chunk_revisit_view.xml',
         'security/ir.model.access.csv',
     ],
     'installable': True,

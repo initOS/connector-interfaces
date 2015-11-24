@@ -57,3 +57,22 @@ class RunTaskWizard(models.TransientModel):
             kwargs['file_id'] = file.id
 
         self.task_id.do_run(**kwargs)
+
+    @api.multi
+    def cron_task(self):
+        self.ensure_one()
+        cron_name = "Connector task: %s" % self.flow_id.name
+        cron_wiz = self.env['impexp.wizard.crontask'].\
+                create({'name': cron_name,
+                        'user_id': self._uid,
+                        'task_id': self.task_id.id,
+                        'async': self.async})
+        return {
+              'type': 'ir.actions.act_window',
+              'res_model': 'impexp.wizard.crontask',
+              'view_mode': 'form',
+              'view_type': 'form',
+              'res_id': cron_wiz.id,
+              'views': [(False, 'form')],
+              'target': 'new',
+               }

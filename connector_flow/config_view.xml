@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <!-- impexp.config -->
+
+        <record model="ir.ui.view" id="config_tree">
+            <field name="name">impexp.config.tree</field>
+            <field name="model">impexp.config</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Config Tree">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="config_form">
+            <field name="name">impexp.config.form</field>
+            <field name="model">impexp.config</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Config Form">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="CSV">
+                                <group>
+                                    <group>
+                                        <field name="encoding"/>
+                                        <field name="delimiter"/>
+                                        <field name="quotechar"/>
+                                    </group>
+                                    <group>
+                                        <field name="lineterminator"/>
+                                        <field name="title_row"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="FTP">
+                                <group>
+                                    <group>
+                                        <field name="ftp_host"/>
+                                        <field name="ftp_port"/>
+                                        <field name="ftp_user"/>
+                                        <field name="ftp_password" password="True"/>
+                                    </group>
+                                    <group>
+                                        <field name="ftp_download_directory"/>
+                                        <field name="ftp_move_directory"/>
+                                        <field name="ftp_file_names"/>
+                                        <field name="ftp_delete_files"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Url">
+                                <group>
+                                    <field name="url"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- menu and window actions -->
+
+        <record model="ir.actions.act_window" id="config_view_action">
+            <field name="name">Config</field>
+            <field name="res_model">impexp.config</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="config_tree"/>
+            <field name="target">current</field>
+        </record>
+
+        <menuitem id="menu_impexp_config"
+                  name="Config"
+                  parent="menu_impexp_root"
+                  action="config_view_action"/>
+
+    </data>
+</openerp>

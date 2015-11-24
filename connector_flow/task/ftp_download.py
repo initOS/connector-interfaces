@@ -65,6 +65,9 @@ class FtpDownload(AbstractTask):
         ftp_config = config['ftp']
         download_directory = ftp_config.get('download_directory', '')
         move_directory = ftp_config.get('move_directory', '')
+        file_names = ftp_config.get('file_names', False)
+        if file_names:
+            file_names = file_names.split(',')
         port_session_factory = ftputil.session.session_factory(
             port=int(ftp_config.get('port', 21)))
         with ftputil.FTPHost(ftp_config['host'], ftp_config['user'],
@@ -74,14 +77,15 @@ class FtpDownload(AbstractTask):
             file_list = ftp_conn.listdir(download_directory)
             downloaded_files = []
             for ftpfile in file_list:
-                if ftp_conn.path.isfile(self._source_name(download_directory,
-                                                          ftpfile)):
-                    file_id = self._handle_new_source(ftp_conn,
-                                                      download_directory,
-                                                      ftpfile,
-                                                      move_directory)
-                    self.run_successor_tasks(file_id=file_id, async=async)
-                    downloaded_files.append(ftpfile)
+                if not file_names or ftpfile in file_names:
+                    if ftp_conn.path.isfile(self._source_name(download_directory,
+                                                              ftpfile)):
+                        file_id = self._handle_new_source(ftp_conn,
+                                                          download_directory,
+                                                          ftpfile,
+                                                          move_directory)
+                        self.run_successor_tasks(file_id=file_id, async=async)
+                        downloaded_files.append(ftpfile)
 
             # Move/delete files only after all files have been processed.
             if ftp_config.get('delete_files'):

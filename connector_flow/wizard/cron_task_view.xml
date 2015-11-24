@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+
+        <record model="ir.ui.view" id="cron_task_form">
+            <field name="name">impexp.wizard.crontask.form</field>
+            <field name="model">impexp.wizard.crontask</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Cron Task Form" version="7.0">
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="user_id" />
+                            <field name="priority" />
+                            <field name="nextcall" />
+                        </group>
+                        <group>
+                            <field name="interval_number"/>
+                            <field name="interval_type"/>
+                            <field name="numbercall"/>
+                            <field name="doall"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="cron_task" string="Cron Task" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="cron_task_view_action">
+            <field name="name">Cron Task</field>
+            <field name="res_model">impexp.wizard.crontask</field>
+            <field name="view_mode">form</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="task_tree"/>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</openerp>
