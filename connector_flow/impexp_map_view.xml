@@ -52,11 +52,12 @@
                                             <field name="pk"/>
                                             <field name="target_field_id" domain="[('model_id', '=', parent.target_model_id), ('ttype', '!=', 'many2many')]"/>
                                             <field name="target_model_id"/>
-                                            <field name="field_type"/>
-                                            <field name="related_field_model"/>
+                                            <field name="field_type" readonly="1"/>
+                                            <field name="related_field_model" readonly="1"/>
                                         </group>
                                     </group>
                                     <group>
+                                        <field name="condition"/>
                                         <field name="value"/>
                                     </group>
                                 </form>

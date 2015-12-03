@@ -30,6 +30,7 @@
                             <field name="max_retries"/>
                             <field name="flow_id"/>
                             <field name="flow_start"/>
+                            <field name="flow_pause"/>
                             <field name="config"/>
                         </group>
                     </sheet>

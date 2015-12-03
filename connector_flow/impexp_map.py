@@ -36,7 +36,7 @@ class ImpExpMap(models.Model):
                              ('both', 'Update & Create')
                              ], string='Type')
     field_ids = fields.One2many('impexp.field', 'map_id',
-                                string='Fields', copy=False,)
+                                string='Fields', copy=False)
     decimals_separator = fields.Selection(string='Decimals separator', selection=[(',', 'Comma (,)'),
                                                          ('.', 'Dot (.)')], required=True, default='.')
     thousands_separator = fields.Selection(string='Thousands separator', selection=[('none', 'None'), (',', 'Comma (,)'),
@@ -48,7 +48,7 @@ class ImpExpField(models.Model):
     _description = 'A wrapper class for an import/export mapping field'
     _order = "position asc, id asc"
 
-    map_id = fields.Many2one('impexp.map', 'Map')
+    map_id = fields.Many2one('impexp.map', required=True, string='Import map', select=True)
     position = fields.Integer('Position')
     pk = fields.Boolean(string='PK?')
     type = fields.Selection(string='Type', selection=[('add', 'Only add'),
@@ -59,25 +59,15 @@ class ImpExpField(models.Model):
     target_field_id = fields.Many2one('ir.model.fields', required=True, string='Field', select=True)
     chars_to_delete = fields.Char('Chars to clean', help="List of characters to remove, separated by commas (,)")
     value = fields.Text('Value')
-    field_type = fields.Selection([('char', 'char'),
-                                  ('text', 'text'),
-                                  ('boolean', 'boolean'),
-                                  ('integer', 'integer'),
-                                  ('date', 'date'),
-                                  ('datetime', 'datetime'),
-                                  ('float', 'float'),
-                                  ('selection', 'selection'),
-                                  ('binary', 'binary'),
-                                  ('many2one', 'many2one')], readonly=True)
-    related_field_model = fields.Char(readonly=True)
+    field_type = fields.Char()
+    related_field_model = fields.Char()
     condition = fields.Text('Python condition', required=False, help="Condition that has to be True to apply the value")
 
     @api.onchange('target_field_id')
     def onchange_target_field_id(self):
         if self.target_field_id:
-            #field_obj = self.env['ir.model.fields'].browse(self.target_field)
-            return {'value': {'field_type': self.target_field_id.ttype, 'related_field_model': self.target_field_id.relation}}
+            self.field_type = self.target_field_id.ttype
+            self.related_field_model = self.target_field_id.relation
         else:
-            return {'value': {'field_type': False, 'related_field_model': False}}
-
-    map_id = fields.Many2one('impexp.map', required=True, string='Import map', select=True)
+            self.field_type = False
+            self.related_field_model = False

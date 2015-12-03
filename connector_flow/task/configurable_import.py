@@ -120,6 +120,12 @@ class ConfigurableImport(AbstractChunkReadTask):
         elif ftype == 'many2one':
             #XXX: always search by name -> what to do with other possibilities?
             return self._search_id(field.model_id.model, {'name': value})
+        elif ftype == 'binary':
+            try:
+                url_obj = urllib2.urlopen(value)
+                return b64encode(url_obj.read())
+            except ValueError:
+                _logger.info('Could not retrieve url %s for field %s' % (value, field.field_description))
         else:
             #TODO: rest of field types
             raise except_orm(_('Field type to be developped'),
