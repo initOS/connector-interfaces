@@ -40,6 +40,7 @@
                                     <field name="pk"/>
                                     <field name="type"/>
                                     <field name="target_field_id"/>
+                                    <field name="value"/>
                                 </tree>
                                 <form>
                                     <group>
@@ -52,11 +53,18 @@
                                             <field name="pk"/>
                                             <field name="target_field_id" domain="[('model_id', '=', parent.target_model_id), ('ttype', '!=', 'many2many')]"/>
                                             <field name="target_model_id"/>
-                                            <field name="field_type" readonly="1"/>
-                                            <field name="related_field_model" readonly="1"/>
+                                            <field name="field_type"/>
+                                            <field name="related_field_model"/>
+                                            <field name="m2o_map_id" attrs="{'invisible': [('field_type', '!=', 'many2one')]}"/>
                                         </group>
                                     </group>
                                     <group>
+                                        <label string="In the condition and value fields you can use:" colspan="4"/>
+                                        <label string=" * Numbers and values, i.e. 4 for an id" colspan="4"/>
+                                        <label string=" * In case of m2o fields, the name to be searched" colspan="4"/>
+                                        <label string=" * Datetime calls, i.e. datetime.now().strftime('%d%m%Y')" colspan="4"/>
+                                        <label string=" * Data from previous imported fields: you have a list of all the objects in result" colspan="4"/>
+                                        <label string=" , i.e. result['product_id'].uom_id.id gets the id of the uom of a previous product_id imported field" colspan="4"/>
                                         <field name="condition"/>
                                         <field name="value"/>
                                     </group>
@@ -82,7 +90,8 @@
         <menuitem id="menu_impexp_map"
                   name="Maps"
                   parent="menu_impexp_root"
-                  action="map_view_action"/>
+                  action="map_view_action"
+                  sequence="40"/>
 
     </data>
 </openerp>

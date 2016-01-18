@@ -81,7 +81,8 @@
         <menuitem id="menu_impexp_config"
                   name="Config"
                   parent="menu_impexp_root"
-                  action="config_view_action"/>
+                  action="config_view_action"
+                  sequence="50"/>
 
     </data>
 </openerp>

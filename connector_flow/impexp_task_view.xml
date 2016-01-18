@@ -126,15 +126,16 @@
                   sequence="10"
                   groups="connector.group_connector_manager"/>
 
-        <menuitem id="menu_impexp_task"
-                  name="Tasks"
-                  parent="menu_impexp_root"
-                  action="task_view_action"/>
-
         <menuitem id="menu_impexp_task_flow"
                   name="Task Flows"
                   parent="menu_impexp_root"
-                  action="task_flow_view_action"/>
+                  action="task_flow_view_action"
+                  sequence="10"/>
 
+        <menuitem id="menu_impexp_task"
+                  name="Tasks"
+                  parent="menu_impexp_root"
+                  action="task_view_action"
+                  sequence="20"/>
     </data>
 </openerp>

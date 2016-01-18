@@ -20,6 +20,7 @@
 
 import urllib2
 from base64 import b64encode
+from datetime import datetime
 
 from openerp import models, api, _
 from openerp.exceptions import except_orm, Warning, RedirectWarning
@@ -31,36 +32,72 @@ _logger = logging.getLogger(__name__)
 
 
 class ConfigurableImport(AbstractChunkReadTask):
-    def read_chunk(self, config=None, chunk_data=None, async=True, chunk_id=None, task_id=None):
+    def read_chunk(self, config=None, chunk_data=None, async=True, chunk_id=None, task_id=None, results = {}, mapping=None):
         #get fields
         if task_id is None:
             raise except_orm(_('Insufficient Data!'),
                 _('The map is not accesible from the chunk'))
         task = self.session.env['impexp.task'].browse(task_id)
-        mapping = task.map_id
-        obj = self.session.env[mapping.target_model_id.model]
+        chunk = self.session.env['impexp.chunk'].browse(chunk_id)
+        mapping = mapping or task.map_id
         fields = mapping.field_ids
+        
+        model = mapping.target_model_id.model
+        obj = self.session.env[model]
+        
+        values = {}
         pk_data = {}
         for field in fields:
-            if field.pk:
-                pk_data[field.target_field_id.name] = self._get_field_value(field, chunk_data)
-
-        existing_id = False
+            if field.target_field_id.ttype == "many2one" and field.type in ['create','both'] and field.m2o_map_id:
+                m2o_chunk = chunk.copy({'name': chunk.name + "/" + field.target_field_id.name,
+                                        'last_task_id': False})
+                try:
+                    results = self.read_chunk(config=config, chunk_data=chunk_data, async=async, chunk_id=m2o_chunk.id, task_id=task_id, results=results, mapping=field.m2o_map_id)
+                    new_state = 'done'
+                except Exception as e:
+                    _logger.info('Error importing chunk %s with exception %s' % (m2o_chunk.id, e, ))
+                    new_state = 'failed'
+                finally:
+                    m2o_chunk.write({'state': new_state})
+                if results.get('id', False):
+                    results[str(field.target_field_id.name)] = results.pop('id')
+                    values[str(field.target_field_id.name)] = results[str(field.target_field_id.name)].id
+            else:
+                value = self._get_field_value(field, chunk_data, results)
+                if field.target_field_id.ttype == "many2one":
+                    results[str(field.target_field_id.name)] = self.session.env[field.target_field_id.relation].browse(value)
+                values[field.target_field_id.name] = value
+                if field.pk:
+                    pk_data[field.target_field_id.name] = value
+        
+        existing = False
         if pk_data:
             # get existing id for pks
-            existing = self._search_id(mapping.target_model_id.model, pk_data, one=True)
+            existing = self._search_id(model, pk_data, one=True)
 
         if existing:  # there is a match for pks
+            results['id'] =  existing
             if mapping.type != 'create':  # if its only create, nothing to do; else we are updating
-                fields_to_use = fields.search([('map_id', '=', mapping.id), ('type', 'in', ['update', 'both'])])
-                existing.write(self._field_dict(fields_to_use, chunk_data))
-                _logger.info('Updated model %s with id %s' % (mapping.target_model_id.model, existing_id, ))
+                fields_to_use = fields.search([('id', 'in', fields.ids), ('type', 'in', ['update', 'both'])])
+                use_values = {field.target_field_id.name: values[field.target_field_id.name] for field in fields_to_use}
+                if use_values:
+                    existing.write(use_values)
+                    _logger.info('Updated model %s with id %s' % (model, existing.id, ))
         else:  # no match
             if mapping.type != 'update':  # if its only update, nothing to do; else we are creating
-                fields_to_use = fields.search([('map_id', '=', mapping.id), ('type', 'in', ['add', 'both'])])
-                new_id = obj.create(self._field_dict(fields_to_use, chunk_data))
-                _logger.info('Created model %s with id %s' % (mapping.target_model_id.model, new_id, ))
-
+                fields_to_use = fields.search([('id', 'in', fields.ids), ('type', 'in', ['create', 'both'])])
+                use_values = {field.target_field_id.name: values[field.target_field_id.name] for field in fields_to_use}
+                new_id = obj.create(use_values)
+                _logger.info('Created model %s with id %s' % (model, new_id, ))
+                results['id'] =  new_id
+        
+        res = {}
+        for key, value in results.items():
+            if isinstance(value, models.BaseModel):
+                res[key] = value.id
+        chunk.res = str(res)
+        return results
+        
     def _search_id(self, model, data, one=True):
         '''
         returns id / ids for a given search
@@ -101,6 +138,8 @@ class ConfigurableImport(AbstractChunkReadTask):
         :param value: the string from the chunk data
         '''
         field.ensure_one()
+        if not value:
+            return False
         ftype = field.target_field_id.ttype
         if ftype in ['char', 'text', 'boolean', 'selection']:
             return value
@@ -118,8 +157,9 @@ class ConfigurableImport(AbstractChunkReadTask):
             #XXX: what if there is an associated number of decimals with no decimal separator (i.e. 325=3.25) -> not taken into account
             return float(value or 0.0)
         elif ftype == 'many2one':
-            #XXX: always search by name -> what to do with other possibilities?
-            return self._search_id(field.model_id.model, {'name': value})
+            #always search by name -> if you need to search for other fields you have to make a submapping with all the fields to pk / only search
+            m2o_obj = self._search_id(field.target_field_id.relation, {'name': value})
+            return m2o_obj and m2o_obj.id or False
         elif ftype == 'binary':
             try:
                 url_obj = urllib2.urlopen(value)
@@ -131,7 +171,7 @@ class ConfigurableImport(AbstractChunkReadTask):
             raise except_orm(_('Field type to be developped'),
                 _("The field type '%s' has not been developped yet!") % (ftype,))
 
-    def _get_field_value(self, field, data):
+    def _get_field_value(self, field, data, results):
         '''
         returns the value processes for creation/search/etc in field
         :param field: the field record
@@ -140,7 +180,9 @@ class ConfigurableImport(AbstractChunkReadTask):
         field.ensure_one()
         #get v as value
         try:
-            v = data[field.position - 1].strip()  # -1 because it starts in 0, but the user does not know
+            v = False
+            if field.position>0:
+                v = data[field.position - 1].strip()  # -1 because it starts in 0, but the user does not know
             if field.chars_to_delete:
                 chars = field.chars_to_delete.split()
                 for char in chars:
@@ -148,12 +190,18 @@ class ConfigurableImport(AbstractChunkReadTask):
             v = self._parse_value(field, v)
         except Exception as e:
             raise except_orm(_('Field cannot be parsed'),
-                _("The field '%s' cannot be parsed with data %s, with error %s") % (field.target_field.name, data[field.position], e, ))
-
+                _("The field '%s' cannot be parsed with data %s, with error %s") % (field.target_field_id.name, data[field.position], e, ))
+        
         #condition and value can use v
         if field.condition:
+            condition = field.condition
+            """ dangerous: it may be a second field, and therefore it wont work ->better to put it in the value
+            #load previous results by replacing them by its dictionary value
+            for key in results.keys():
+                condition = condition.replace(key, "results['%s']" % (key, ))
+            """
             try:
-                condition = eval(field.condition)
+                condition = eval(condition)
                 if not condition:
                     return False
             except Exception as e:
@@ -164,13 +212,19 @@ class ConfigurableImport(AbstractChunkReadTask):
             res = v
         else:
             try:
-                res = eval(field.value)
+                #load previous results by replacing them by its dictionary value
+                value = field.value
+                """ dangerous: it may be a second field, and therefore it wont work ->better to put it in the value
+                for key in results.keys():
+                    value = value.replace(key, "results['%s']" % (key, ))
+                """
+                res = eval(value)
             except Exception as e:
                 _logger.info('Cannot eval value %s with data %s' % (field.value, str(data), ))
                 return False
         return res
 
-    def _field_dict(self, fields, data):
+    def _field_dict(self, fields, data, results):
         '''
         makes a dict for all the fields with the data, to be applied to a create or write
         :param fields: all the fields to be translated into the dict
@@ -178,7 +232,7 @@ class ConfigurableImport(AbstractChunkReadTask):
         '''
         res = {}
         for field in fields:
-            res[field.target_field_id.name] = self._get_field_value(field, data)
+            res[field.target_field_id.name] = self._get_field_value(field, data, results)
         return res
 
 class ConfigurableImportTask(models.Model):

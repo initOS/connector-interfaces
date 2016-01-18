@@ -40,3 +40,5 @@ class ImpExpChunk(models.Model):
     state = fields.Selection(string='State', selection='_states',
                              default='new')
     last_task_id = fields.Many2one('impexp.task', string='Last Task', help='The last task processed properly')
+    res = fields.Text('Results', help='A dictionary where we save all the results: ids of registries created, with the name of the field as key')
+    last_error = fields.Text()

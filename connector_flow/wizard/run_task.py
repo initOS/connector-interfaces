@@ -28,7 +28,7 @@ class RunTaskWizard(models.TransientModel):
     task_id = fields.Many2one('impexp.task', string='Task', required=True)
     datas = fields.Binary(string='File')
     datas_fname = fields.Char(string='File Name', size=256)
-    async = fields.Boolean(string='Run Asynchronously', default=True)
+    async = fields.Boolean(string='Run Asynchronously')
     attachment_id = fields.Many2one('ir.attachment', string='Result File')
 
     @api.onchange('flow_id')
@@ -44,6 +44,12 @@ class RunTaskWizard(models.TransientModel):
     def run_task(self):
         self.ensure_one()
         kwargs = {'async': self.async}
+        results = {}
+        if self._context:
+            for key, value in self._context.items():
+                results[key] = value
+        kwargs['results'] = results
+        
         if self.datas:
             upload_name = "Upload from run task wizard: %s" \
                 % self.datas_fname
@@ -51,6 +57,7 @@ class RunTaskWizard(models.TransientModel):
                 create({'name': upload_name,
                         'datas': self.datas,
                         'datas_fname': self.datas_fname})
+            self.attachment_id = ir_attachment.id
             file = self.env['impexp.file'].\
                 create({'attachment_id': ir_attachment.id,
                         'task_id': self.task_id.id})

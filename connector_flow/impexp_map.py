@@ -20,9 +20,6 @@
 
 from openerp import models, fields, api, exceptions, _
 
-import logging
-_logger = logging.getLogger(__name__)
-
 
 class ImpExpMap(models.Model):
     _name = 'impexp.map'
@@ -30,8 +27,7 @@ class ImpExpMap(models.Model):
 
     name = fields.Char(string='Name', required=True)
     target_model_id = fields.Many2one('ir.model', 'Target Model')
-    type = fields.Selection([
-                             ('update', 'Only Update'),
+    type = fields.Selection([('update', 'Only Update'),
                              ('create', 'Only Create'),
                              ('both', 'Update & Create')
                              ], string='Type')
@@ -46,28 +42,32 @@ class ImpExpMap(models.Model):
 class ImpExpField(models.Model):
     _name = 'impexp.field'
     _description = 'A wrapper class for an import/export mapping field'
-    _order = "position asc, id asc"
+    _order = "id asc"
 
-    map_id = fields.Many2one('impexp.map', required=True, string='Import map', select=True)
-    position = fields.Integer('Position')
-    pk = fields.Boolean(string='PK?')
-    type = fields.Selection(string='Type', selection=[('add', 'Only add'),
-                                                         ('update', 'Only update'),
-                                                         ('both', 'Add & update'),
-                                                         ('no', "None, just select / pk")], required=True, default='both')
-    target_model_id = fields.Many2one('ir.model', 'Target Model', related='map_id.target_model_id', readonly=True)
-    target_field_id = fields.Many2one('ir.model.fields', required=True, string='Field', select=True)
-    chars_to_delete = fields.Char('Chars to clean', help="List of characters to remove, separated by commas (,)")
-    value = fields.Text('Value')
-    field_type = fields.Char()
-    related_field_model = fields.Char()
-    condition = fields.Text('Python condition', required=False, help="Condition that has to be True to apply the value")
-
-    @api.onchange('target_field_id')
-    def onchange_target_field_id(self):
+    @api.one
+    @api.depends('target_field_id')
+    def _get_field_values(self):
         if self.target_field_id:
             self.field_type = self.target_field_id.ttype
             self.related_field_model = self.target_field_id.relation
         else:
             self.field_type = False
             self.related_field_model = False
+    
+    map_id = fields.Many2one('impexp.map', string='Import map')
+    position = fields.Integer('Position')
+    pk = fields.Boolean(string='PK?')
+    type = fields.Selection(string='Type', selection=[('update', 'Only Update'),
+                                                    ('create', 'Only Create'),
+                                                    ('both', 'Add & update'),
+                                                    ('no', "None, just select / pk")], required=True, default='both')
+    target_model_id = fields.Many2one('ir.model', 'Target Model', related='map_id.target_model_id', readonly=True)
+    target_field_id = fields.Many2one('ir.model.fields', required=True, string='Field', select=True)
+    chars_to_delete = fields.Char('Chars to clean', help="List of characters to remove, separated by commas (,)")
+    value = fields.Text('Value')
+    field_type = fields.Char(store=True, readonly=True, compute='_get_field_values')
+    related_field_model = fields.Char(store=True, readonly=True, compute='_get_field_values')
+    condition = fields.Text('Python condition', required=False, help="Condition that has to be True to apply the value")
+
+    m2o_map_id = fields.Many2one('impexp.map', string='Reference map')
+    name = fields.Char(related='target_field_id.name', readonly=True)

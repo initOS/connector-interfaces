@@ -54,16 +54,10 @@ class TableRowImport(AbstractTask):
                 continue
             name = '%s, line %d' % (file.attachment_id.datas_fname, lineno)
             data = row
-            # commented because we need the order, and not all the files come with header
-            """
-            if header:
-                data = dict(zip(header, data))
-            """
-            chunk_id = self.session.create('impexp.chunk',
-                                           {'name': name,
+            chunk = self.session.env['impexp.chunk'].create({'name': name,
                                             'data': simplejson.dumps(data),
                                             'file_id': file.id})
-            self.run_successor_tasks(chunk_id=chunk_id, async=async, **kwargs)
+            self.run_successor_tasks(chunk_id=chunk.id, async=async, **kwargs)
             if lineno % 1000 == 0:
                 _logger.info('Created %d chunks', lineno)
 

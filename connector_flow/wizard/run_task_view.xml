@@ -38,7 +38,8 @@
         <menuitem id="menu_impexp_run_task"
                   name="Run Task"
                   parent="menu_impexp_root"
-                  action="run_task_view_action"/>
+                  action="run_task_view_action"
+                  sequence="30"/>
 
     </data>
 </openerp>

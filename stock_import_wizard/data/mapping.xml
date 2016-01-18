@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="0">
+        <!--mappings-->
+        <record id="stock_move_mapping" model="impexp.map">
+            <field name="target_model_id" search="[('name','=','Stock Move')]"/>
+            <field name="decimals_separator">,</field>
+            <field name="thousands_separator">none</field>
+            <field name="name">Movimientos desde listado</field>
+            <field name="type">create</field>
+        </record>
+        <record id="stock_picking_mapping" model="impexp.map">
+            <field name="target_model_id" search="[('name','=','Picking List')]"/>
+            <field name="decimals_separator">,</field>
+            <field name="thousands_separator">none</field>
+            <field name="name">Albaran desde movimientos</field>
+            <field name="type">create</field>
+        </record>
+        <record id="product_product_mapping" model="impexp.map">
+            <field name="target_model_id" search="[('name','=','Product')]"/>
+            <field name="decimals_separator">,</field>
+            <field name="thousands_separator">none</field>
+            <field name="name">Producto desde movimientos</field>
+            <field name="type">create</field>
+        </record>
+        
+        <!--fields-->
+        <record id="stock_move_field1" model="impexp.field">
+            <field name="map_id" ref="stock_import_wizard.stock_move_mapping"/>
+            <field name="position">0</field>
+            <field name="target_field_id" search="[('model','=','stock.move'),('name','=','picking_id')]"/>
+            <field name="pk" eval="False"/>
+            <field name="type">create</field>
+            <field name="m2o_map_id" ref="stock_import_wizard.stock_picking_mapping"/>
+        </record>
+        <record id="stock_move_field2" model="impexp.field">
+            <field name="map_id" ref="stock_import_wizard.stock_move_mapping"/>
+            <field name="position">0</field>
+            <field name="target_field_id" search="[('model','=','stock.move'),('name','=','product_id')]"/>
+            <field name="pk" eval="False"/>
+            <field name="type">create</field>
+            <field name="m2o_map_id" ref="stock_import_wizard.product_product_mapping"/>
+        </record>
+        <record id="stock_move_field3" model="impexp.field">
+            <field name="map_id" ref="stock_import_wizard.stock_move_mapping"/>
+            <field name="position">3</field>
+            <field name="target_field_id" search="[('model','=','stock.move'),('name','=','product_uom_qty')]"/>
+            <field name="pk" eval="False"/>
+            <field name="type">create</field>
+        </record>
+        <record id="stock_move_field4" model="impexp.field">
+            <field name="map_id" ref="stock_import_wizard.stock_move_mapping"/>
+            <field name="position">0</field>
+            <field name="target_field_id" search="[('model','=','stock.move'),('name','=','product_uom')]"/>
+            <field name="pk" eval="False"/>
+            <field name="type">create</field>
+            <field name="value">results['product_id'].uom_id.id</field>
+        </record>
+        <record id="stock_move_field5" model="impexp.field">
+            <field name="map_id" ref="stock_import_wizard.stock_move_mapping"/>
+            <field name="position">0</field>
+            <field name="target_field_id" search="[('model','=','stock.move'),('name','=','location_id')]"/>
+            <field name="pk" eval="False"/>
+            <field name="type">create</field>
+            <field name="value">results['location_id'].id</field>
+        </record>
+        <record id="stock_move_field6" model="impexp.field">
+            <field name="map_id" ref="stock_import_wizard.stock_move_mapping"/>
+            <field name="position">0</field>
+            <field name="target_field_id" search="[('model','=','stock.move'),('name','=','location_dest_id')]"/>
+            <field name="pk" eval="False"/>
+            <field name="type">create</field>
+            <field name="value">results['location_dest_id'].id</field>
+        </record>
+        <record id="stock_move_field7" model="impexp.field">
+            <field name="map_id" ref="stock_import_wizard.stock_move_mapping"/>
+            <field name="position">2</field>
+            <field name="target_field_id" search="[('model','=','stock.move'),('name','=','name')]"/>
+            <field name="pk" eval="False"/>
+            <field name="type">create</field>
+        </record>
+        
+        <record id="stock_picking_field1" model="impexp.field">
+            <field name="map_id" ref="stock_import_wizard.stock_picking_mapping"/>
+            <field name="position">0</field>
+            <field name="target_field_id" search="[('model','=','stock.picking'),('name','=','origin')]"/>
+            <field name="pk" eval="True"/>
+            <field name="type">create</field>
+            <field name="value">datetime.now().strftime('%d-%m-%Y %H:%M')</field>
+        </record>
+        <record id="stock_picking_field2" model="impexp.field">
+            <field name="map_id" ref="stock_import_wizard.stock_picking_mapping"/>
+            <field name="position">0</field>
+            <field name="target_field_id" search="[('model','=','stock.picking'),('name','=','picking_type_id')]"/>
+            <field name="pk" eval="False"/>
+            <field name="type">create</field>
+            <field name="value">results['picking_type_id'].id</field>
+        </record>
+        
+        <record id="product_product_field1" model="impexp.field">
+            <field name="map_id" ref="stock_import_wizard.product_product_mapping"/>
+            <field name="position">1</field>
+            <field name="target_field_id" search="[('model','=','product.product'),('name','=','default_code')]"/>
+            <field name="pk" eval="True"/>
+            <field name="type">create</field>
+        </record>
+        <record id="product_product_field2" model="impexp.field">
+            <field name="map_id" ref="stock_import_wizard.product_product_mapping"/>
+            <field name="position">2</field>
+            <field name="target_field_id" search="[('model','=','product.product'),('name','=','name')]"/>
+            <field name="pk" eval="False"/>
+            <field name="type">create</field>
+        </record>
+        
+        <!--config-->
+        <record id="stock_import_config" model="impexp.config">
+            <field name="name">Stock Import Config</field>
+            <field name="encoding">iso-8859-15</field>
+            <field name="delimiter">;</field>
+            <field name="quotechar">"</field>
+            <field name="title_row" eval="True"/>
+        </record>
+        
+        <!--flow-->
+        <record id="stock_import_flow" model="impexp.task.flow">
+            <field name="name">Stock Import</field>
+        </record>
+        
+        <!--tasks-->
+        <record id="stock_import_task1" model="impexp.task">
+            <field name="config_id" ref="stock_import_wizard.stock_import_config"/>
+            <field name="flow_id" ref="stock_import_wizard.stock_import_flow"/>
+            <field name="max_retries">1</field>
+            <field name="task">csv_import</field>
+            <field name="flow_pause" eval="False"/>
+            <field name="flow_start" eval="True"/>
+            <field name="name">Break</field>
+        </record>
+        <record id="stock_import_task2" model="impexp.task">
+            <field name="map_id" ref="stock_import_wizard.stock_move_mapping"/>
+            <field name="flow_id" ref="stock_import_wizard.stock_import_flow"/>
+            <field name="max_retries">1</field>
+            <field name="task">configurable_import</field>
+            <field name="flow_pause" eval="False"/>
+            <field name="flow_start" eval="False"/>
+            <field name="name">Import</field>
+        </record>
+        
+        <!--transition-->
+        <record id="stock_import_transition1" model="impexp.task.transition">
+            <field name="task_from_id" ref="stock_import_wizard.stock_import_task1"/>
+            <field name="task_to_id" ref="stock_import_wizard.stock_import_task2"/>
+        </record>
+        
+        
+    </data>
+</openerp>

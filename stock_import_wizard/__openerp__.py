@@ -2,7 +2,6 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2014 initOS GmbH & Co. KG (<http://www.initos.com>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,30 +19,23 @@
 ##############################################################################
 
 {
-    'name': 'Connector-based task flow for import/export',
-    'version': '0.2',
-    'category': 'Connector',
-    'author': 'initOS GmbH & Co. KG,Odoo Community Association (OCA)',
-    'license': 'AGPL-3',
-    'website': 'http://www.initos.com',
-    'depends': [
-        'connector',
-    ],
-    'external_dependencies': {
-        'python': ['ftputil', 'csv'],
-    },
+    'name': 'Stock import wizard',
+    'version': '0.1',
+    'author': 'Digital5 S.L.',
+    'summary': 'Wizard that imports stock moves',
+    'description': """
+A wizard that uses connector flow mappings to import stock moves, creating the picking and the products on the fly
+    """,
+    'website': 'https://www.digital5.es',
+    'depends': ['connector_flow'],
+    'category': 'Stock',
+    'sequence': 20,
+    'demo': [],
     'data': [
-        'impexp_task_view.xml',
-        'impexp_map_view.xml',
-        'config_view.xml',
-        'file_view.xml',
-        'chunk_view.xml',
-        'wizard/run_task_view.xml',
-        'wizard/cron_task_view.xml',
-        'wizard/chunk_revisit_view.xml',
-        'security/ir.model.access.csv',
+        'wizard/stock_import_wizard_view.xml',
+        'data/mapping.xml',
     ],
+    'test': [],
     'installable': True,
     'auto_install': False,
-    'application': False,
 }

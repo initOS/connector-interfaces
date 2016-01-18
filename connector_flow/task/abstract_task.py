@@ -22,7 +22,8 @@ from openerp.addons.connector.session import ConnectorSession
 from openerp import _
 import simplejson
 from base64 import b64encode, b64decode
-
+import logging
+_logger = logging.getLogger(__name__)
 
 class AbstractTask(object):
 
@@ -108,7 +109,9 @@ class AbstractChunkReadTask(AbstractTask):
         try:
             result = self.read_chunk(**kwargs)
             new_state = 'done'
-        except:
+        except Exception as e:
+            _logger.info('Error importing chunk %s with exception %s' % (chunk_id, e, ))
+            chunk.write({'last_error': e})
             new_state = 'failed'
         finally:
             chunk.write({'state': new_state})

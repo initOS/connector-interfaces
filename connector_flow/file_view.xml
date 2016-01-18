@@ -24,10 +24,17 @@
             <field name="target">current</field>
         </record>
 
+        <menuitem id="menu_impexp_results"
+                  parent="connector.menu_connector_root"
+                  name="Results"
+                  sequence="30"
+                  groups="connector.group_connector_manager"/>
+                  
         <menuitem id="menu_impexp_file"
                   name="Files"
-                  parent="menu_impexp_root"
-                  action="file_view_action"/>
+                  parent="menu_impexp_results"
+                  action="file_view_action"
+                  sequence="10"/>
 
     </data>
 </openerp>

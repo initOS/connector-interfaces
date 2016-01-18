@@ -33,6 +33,7 @@
                                 <field name="task_id"/>
                                 <field name="file_id"/>
                                 <field name="last_task_id"/>
+                                <field name="last_error" attrs="{'invisible': [('last_error', '=', False)]}"/>
                             </group>
                         </group>
                     </sheet>
@@ -70,8 +71,9 @@
 
         <menuitem id="menu_impexp_chunk"
                   name="Chunks"
-                  parent="menu_impexp_root"
-                  action="chunk_view_action"/>
+                  parent="menu_impexp_results"
+                  action="chunk_view_action"
+                  sequence="20"/>
 
     </data>
 </openerp>
