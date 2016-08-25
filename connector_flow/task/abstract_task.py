@@ -94,6 +94,7 @@ class AbstractChunkReadTask(AbstractTask):
             result = self.read_chunk(**kwargs)
             new_state = 'done'
         except:
+            self.session.env.cr.rollback()
             raise
         finally:
             chunk.write({'state': new_state})
