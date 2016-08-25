@@ -17,11 +17,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-
-from openerp.addons.connector.session import ConnectorSession
-from openerp import _
 import simplejson
 from base64 import b64encode, b64decode
+
+from openerp import _
+from openerp.addons.connector.session import ConnectorSession
 
 
 class AbstractTask(object):
@@ -96,7 +96,10 @@ class AbstractChunkReadTask(AbstractTask):
         except:
             raise
         finally:
-            chunk.write({'state': new_state})
+            try:
+                chunk.write({'state': new_state})
+            except:
+                pass
         return result
 
     def read_chunk(self, **kwargs):
