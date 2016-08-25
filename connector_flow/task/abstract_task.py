@@ -95,8 +95,6 @@ class AbstractChunkReadTask(AbstractTask):
             new_state = 'done'
         except:
             raise
-        finally:
-            chunk.write({'state': new_state})
         return result
 
     def read_chunk(self, **kwargs):
