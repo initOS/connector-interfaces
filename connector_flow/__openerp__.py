@@ -28,6 +28,7 @@
     'website': 'http://www.initos.com',
     'depends': [
         'connector',
+        'external_file_location',
     ],
     'external_dependencies': {
         'python': ['ftputil'],

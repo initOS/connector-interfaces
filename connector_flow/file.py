@@ -25,13 +25,14 @@ class ImpExpFile(models.Model):
     _name = 'impexp.file'
     _description = 'Wrapper for a file to be imported/exported'
 
+    # states is already managed in attachment metadata, should be deleted here?
     @api.model
     def _states(self):
         return [('new', 'New'),
                 ('failed', 'Failed'),
                 ('done', 'Done')]
 
-    attachment_id = fields.Many2one('ir.attachment', string='Attachment',
+    attachment_id = fields.Many2one('ir.attachment.metadata', string='Attachment',
                                     required=True)
     task_id = fields.Many2one('impexp.task', string='Task')
     state = fields.Selection(string='State', selection='_states',

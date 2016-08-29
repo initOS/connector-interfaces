@@ -25,6 +25,7 @@
                         <group>
                             <field name="name"/>
                             <field name="task"/>
+                            <field name="file_task_id"/>
                             <field name="max_retries"/>
                             <field name="flow_id"/>
                             <field name="flow_start"/>

@@ -79,6 +79,7 @@ class ImpExpTask(models.Model):
                                          'task_to_id',
                                          string='Incoming Transitions')
     flow_start = fields.Boolean(string='Start of a Task Flow')
+    file_task_id = fields.Many2one('external.file.task')
 
     @api.one
     @api.constrains('flow_start', 'flow_id')
@@ -99,6 +100,8 @@ class ImpExpTask(models.Model):
         """Parse task configuration"""
         self.ensure_one()
         config = self.config
+        if self.file_task_id:
+            return self.file_task_id
         if config:
             return literal_eval(config)
         return {}
