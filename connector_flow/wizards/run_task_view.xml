@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="run_task_form" model="ir.ui.view">
+        <field name="name">impexp.wizard.runtask.form</field>
+        <field name="model">impexp.wizard.runtask</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Task Form">
+                <group>
+                    <field name="flow_id"/>
+                    <field name="task_id"/>
+                    <field name="datas" filename="datas_fname"/>
+                    <field name="datas_fname" invisible="1"/>
+                    <field name="asynch"/>
+                </group>
+                <footer>
+                    <button name="run_task" string="Run Task" type="object" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="run_task_view_action" model="ir.actions.act_window">
+        <field name="name">Run Task</field>
+        <field name="res_model">impexp.wizard.runtask</field>
+        <field name="view_mode">form</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="task_tree"/>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_impexp_run_task"
+              name="Run Task"
+              parent="menu_impexp_root"
+              sequence="200"
+              action="run_task_view_action"/>
+</odoo>

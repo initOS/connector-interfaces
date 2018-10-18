@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="chunk_tree" model="ir.ui.view">
+        <field name="name">impexp.chunk.tree</field>
+        <field name="model">impexp.chunk</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree string="Chunk Tree"
+                  create="false" delete="false"
+                  colors="red: state == 'failed'; gray: state == 'new'">
+                <field name="create_date"/>
+                <field name="write_date"/>
+                <field name="name"/>
+                <field name="file_id"/>
+                <field name="task_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="chunk_form" model="ir.ui.view">
+        <field name="name">impexp.chunk.form</field>
+        <field name="model">impexp.chunk</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Chunk Form" create="false">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="file_id"/>
+                            <field name="task_id"/>
+                        </group>
+                        <group>
+                            <field name="create_date"/>
+                            <field name="write_date"/>
+                        </group>
+                    </group>
+                    <label for="data"/>
+                    <field name="data" attrs="{'readonly': [('state', 'in', ['failed', 'done'])]}"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="chunk_view_action" model="ir.actions.act_window">
+        <field name="name">Chunks</field>
+        <field name="res_model">impexp.chunk</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="chunk_tree"/>
+        <field name="target">current</field>
+    </record>
+
+    <menuitem id="menu_impexp_chunk"
+              name="Chunks"
+              parent="menu_impexp_root"
+              sequence="110"
+              action="chunk_view_action"/>
+</odoo>

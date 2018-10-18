@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="file_tree" model="ir.ui.view">
+        <field name="name">impexp.file.tree</field>
+        <field name="model">impexp.file</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree string="File Tree"
+                  create="false" delete="false"
+                  colors="red: state == 'failed'; gray: state == 'new'">
+                <field name="create_date"/>
+                <field name="write_date"/>
+                <field name="name"/>
+                <field name="attachment_id"/>
+                <field name="task_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="file_form" model="ir.ui.view">
+        <field name="name">impexp.file.form</field>
+        <field name="model">impexp.file</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="File Form" create="false">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="attachment_id"/>
+                            <field name="task_id"/>
+                        </group>
+                        <group>
+                            <field name="create_date"/>
+                            <field name="write_date"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="file_view_action" model="ir.actions.act_window">
+        <field name="name">Files</field>
+        <field name="res_model">impexp.file</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="file_tree"/>
+        <field name="target">current</field>
+    </record>
+
+    <menuitem id="menu_impexp_file"
+              name="Files"
+              parent="menu_impexp_root"
+              sequence="100"
+              action="file_view_action"/>
+</odoo>

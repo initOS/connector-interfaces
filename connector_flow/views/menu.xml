@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <menuitem id="menu_impexp_root"
+              parent="connector.menu_connector_root"
+              name="Import/Export"
+              sequence="10"
+              groups="connector.group_connector_manager"/>
+</odoo>
