@@ -5,6 +5,9 @@ import simplejson
 
 from odoo import _
 
+# for convenience, make the decorator available for import also from this ile
+from .task import Task  # pylint: disable=unused-import
+
 
 class AbstractTask(object):
     """Base class for tasks"""

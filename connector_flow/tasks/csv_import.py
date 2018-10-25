@@ -5,9 +5,7 @@ from base64 import b64decode
 
 import simplejson
 
-from odoo import fields, models
-
-from .abstract_task import AbstractTask
+from .abstract_task import AbstractTask, Task
 
 _logger = logging.getLogger(__name__)
 
@@ -70,6 +68,7 @@ class AbstractTableRowImport(AbstractTask):
         file_rec.write({'state': 'done'})
 
 
+@Task(selection='csv_import', name="CSV Import")
 class CsvImport(AbstractTableRowImport):
     """
     Parses a CSV file and stores the lines as chunks.
@@ -101,14 +100,3 @@ class CsvImport(AbstractTableRowImport):
                         .split("\n")
         options = config.get('csv', {})
         return csv.reader(data, **options)
-
-
-class CsvImportTask(models.Model):
-    _inherit = "impexp.task"
-
-    task = fields.Selection(selection_add=[
-        ('csv_import', "CSV Import"),
-    ])
-
-    def csv_import_class(self):
-        return CsvImport

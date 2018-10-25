@@ -2,13 +2,13 @@
 import logging
 
 import ftputil
-from odoo import fields, models
 
-from .abstract_task import AbstractTask
+from .abstract_task import AbstractTask, Task
 
 _logger = logging.getLogger(__name__)
 
 
+@Task(selection='ftp_download', name="FTP Download")
 class FtpDownload(AbstractTask):
     """FTP Configuration options:
      - host, user, password, port
@@ -78,14 +78,3 @@ class FtpDownload(AbstractTask):
                         self._source_name(download_directory, ftp_file),
                         self._source_name(move_directory, ftp_file))
         self.run_successor_tasks(asynch=asynch)
-
-
-class FtpDownloadTask(models.Model):
-    _inherit = "impexp.task"
-
-    task = fields.Selection(selection_add=[
-        ('ftp_download', "FTP Download"),
-    ])
-
-    def ftp_download_class(self):
-        return FtpDownload

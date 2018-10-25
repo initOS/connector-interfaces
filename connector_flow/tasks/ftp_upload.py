@@ -3,13 +3,13 @@ import logging
 from base64 import b64decode
 
 import ftputil
-from odoo import fields, models
 
-from .abstract_task import AbstractTask
+from .abstract_task import AbstractTask, Task
 
 _logger = logging.getLogger(__name__)
 
 
+@Task(selection='ftp_upload', name="FTP Upload")
 class FtpUpload(AbstractTask):
     """FTP Configuration options:
      - host, user, password, port
@@ -50,14 +50,3 @@ class FtpUpload(AbstractTask):
         self._upload_file(config, f.attachment_id.datas_fname,
                           b64decode(f.attachment_id.datas))
         self.run_successor_tasks(asynch=asynch)
-
-
-class FtpUploadTask(models.Model):
-    _inherit = "impexp.task"
-
-    task = fields.Selection(selection_add=[
-        ('ftp_upload', "FTP Upload"),
-    ])
-
-    def ftp_upload_class(self):
-        return FtpUpload

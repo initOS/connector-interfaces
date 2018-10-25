@@ -2,11 +2,10 @@
 import csv
 from cStringIO import StringIO
 
-from odoo import fields, models
-
-from .abstract_task import AbstractChunkReadTask
+from .abstract_task import AbstractChunkReadTask, Task
 
 
+@Task(selection='csv_export', name="CSV Export")
 class CsvExport(AbstractChunkReadTask):
     """
     Reads a chunk and writes it into a CSV file.
@@ -51,14 +50,3 @@ class CsvExport(AbstractChunkReadTask):
         return [{
             'file_id': file_id,
         }]
-
-
-class CsvExportTask(models.Model):
-    _inherit = "impexp.task"
-
-    task = fields.Selection(selection_add=[
-        ('csv_export', "CSV Export"),
-    ])
-
-    def csv_export_class(self):
-        return CsvExport
