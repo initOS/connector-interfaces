@@ -5,6 +5,8 @@ from odoo import api, exceptions, fields, models
 from odoo.addons.queue_job.job import job as qjob
 from odoo.addons.queue_job.job import related_action
 
+from ..tools import now
+
 
 class ImpExpTaskTransition(models.Model):
     _name = "impexp.task.transition"
@@ -159,7 +161,8 @@ class ImpExpTask(models.Model):
         return {}
 
     @api.multi
-    def do_run(self, asynch=True, **kwargs):
+    # pylint: disable=unused-argument
+    def do_run(self, asynch=True, dt=None, **kwargs):
         self.ensure_one()
         if asynch:
             args = dict(
@@ -172,7 +175,7 @@ class ImpExpTask(models.Model):
             this = self.with_delay(**args)
         else:
             this = self
-        result = this._run_task(asynch=asynch, **kwargs)
+        result = this._run_task(asynch=asynch, dt=now(), **kwargs)
         # If we run asynchronously, we ignore the result
         # (which is the UUID of the job in the queue).
         if not asynch:

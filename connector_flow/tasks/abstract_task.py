@@ -5,6 +5,7 @@ import simplejson
 
 from odoo import _
 
+from ..tools import now
 # for convenience, make the decorator available for import also from this ile
 from .task import Task  # pylint: disable=unused-import
 
@@ -17,6 +18,16 @@ class AbstractTask(object):
         self.env = task.env
         assert len(task.ids) == 1, "Single task instance ID expected"
         self._id = task.ids[0]
+
+    @staticmethod
+    def _now(tz=None):
+        return now(tz=tz)
+
+    def _tz(self):
+        """Returns the timezone of the user that ran this task"""
+        users_pool = self.env['res.users']
+        tz = users_pool.browse(self.env.uid).partner_id.tz
+        return tz
 
     def run_task(self, task_id, **kwargs):
         return self.env['impexp.task'].browse(task_id).do_run(**kwargs)
