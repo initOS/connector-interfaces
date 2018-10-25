@@ -4,18 +4,16 @@
 Connector-Flow
 ==============
 
-This module provides a minimal framework for common
-data import/export tasks based on the OpenERP Connector. Tasks like parsing
-and writing a CSV file or uploading a file to an FTP server can be chained
-into task flows.
+This module provides a minimal framework for task flows based on the OpenERP
+Connector.  Tasks can be chained into task flows.
 
-At the moment every flow must a have a unique start. One task can trigger
-several tasks.
+Every flow must a have a unique start.  A task can trigger several successor
+tasks.
 
-The module adds a new menu item "Import/Export" under the Connector top-level
-menu where tasks and task flows can be configured. Tasks can be run from
-the "Run Task" wizard. If a task needs a file as input, a file can be uploaded
-in the wizard.
+The module adds a new menu item "Import/Export" under the "Connector"
+top-level menu where tasks and task flows can be configured.  Tasks can be run
+from the "Run Task" wizard.  If a task needs a file as input, that file can be
+uploaded in the wizard.
 
 The *connector_flow_example_{ftp,product}* modules provide pre-configured
 demo flows.
@@ -27,7 +25,7 @@ A very brief tutorial can be found at http://blog.initos.com/?p=1220
 
 
 Bug Tracker
-===========
+-----------
 
 Bugs are tracked on `GitHub Issues <https://github.com/OCA/connector-interfaces/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
@@ -36,16 +34,17 @@ If you spotted it first, help us smashing it by providing a detailed and welcome
 
 
 Credits
-=======
+-------
 
 Contributors
-------------
+............
 
 * Thomas Rehn <thomas.rehn@initos.com>
 * Peter Hahn <peter.hahn@initos.com>
+* Andreas Zöllner <andreas.zoellner@initos.com>
 
 Maintainer
-----------
+..........
 
 .. image:: https://odoo-community.org/logo.png
    :alt: Odoo Community Association
