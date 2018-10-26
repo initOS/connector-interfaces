@@ -10,7 +10,7 @@ Connector.  Tasks can be chained into task flows.
 Every flow must a have a unique start.  A task can trigger several successor
 tasks.
 
-The module adds a new menu item "Import/Export" under the "Connector"
+The module adds a new menu item "Connector Flow" under the "Connector"
 top-level menu where tasks and task flows can be configured.  Tasks can be run
 from the "Run Task" wizard.  If a task needs a file as input, that file can be
 uploaded in the wizard.

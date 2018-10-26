@@ -2,7 +2,7 @@
 <odoo>
     <menuitem id="menu_impexp_root"
               parent="connector.menu_connector_root"
-              name="Import/Export"
+              name="Connector Flow"
               sequence="10"
               groups="connector.group_connector_manager"/>
 </odoo>
