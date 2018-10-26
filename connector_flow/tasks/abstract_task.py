@@ -127,7 +127,7 @@ class AbstractChunkReadTask(AbstractTask):
 
     def run(self, config=None, chunk_id=None, asynch=True, **kwargs):
         chunk = self.env['impexp.chunk'].browse(chunk_id)
-        chunk_data = chunk.data
+        chunk_data = simplejson.loads(chunk.data)
         new_state = 'failed'
         try:
             result = self.read_chunk(
