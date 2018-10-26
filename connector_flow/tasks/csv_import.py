@@ -18,10 +18,15 @@ class AbstractTableRowImport(AbstractTask):
     `'includes_header': True` in the `config`, and the chunks will be dicts
     with the headers as keys.  Otherwise, the chunks will be lists.
 
+    Lines can be ignored.  In this case, declare `'comment_char'` in the
+    `config` with a character, and lines beginning with that character will be
+    skipped.
+
     `config` defaults to
     ```
     {
         'includes_header': False,
+        'comment_char': None,
     }
     ```
     """
@@ -35,6 +40,7 @@ class AbstractTableRowImport(AbstractTask):
             return
 
         includes_header = config.get('includes_header', False)
+        comment_char = config.get('comment_char', None)
 
         lineno = 0
         header = None
@@ -47,6 +53,8 @@ class AbstractTableRowImport(AbstractTask):
                 header = row
                 continue
             if not row:
+                continue
+            if comment_char and row[0] and row[0][0] == comment_char:
                 continue
             name = "%s, line %d" % (file_rec.attachment_id.datas_fname, lineno)
             data = row
@@ -77,6 +85,7 @@ class CsvImport(AbstractTableRowImport):
     ```
     {
         'includes_header': False,  # headers in first line?
+        'comment_char': None,  # skip lines beginning with this char
         'encoding': 'utf-8',  # input file encoding
         'chunk_encoding': 'utf-8',
         'csv': {
