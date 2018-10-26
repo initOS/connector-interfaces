@@ -21,7 +21,7 @@ class CsvExport(AbstractChunkReadTask):
             'escapechar': None,
             'lineterminator': '\r\n',
             'quotechar': '"',
-            'quoting': csv.QUOTE_MINIMAL,
+            'quoting': 0,  # csv.QUOTE_MINIMAL
             'skipinitialspace': False,
         },
     }

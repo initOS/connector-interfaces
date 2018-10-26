@@ -15,7 +15,7 @@ class AbstractTableRowImport(AbstractTask):
     Parses a blob and stores the lines in chunks.
 
     The first line may contain headers.  In this case, declare
-    `'includes_header': False` in the `config`, and the chunks will be dicts
+    `'includes_header': True` in the `config`, and the chunks will be dicts
     with the headers as keys.  Otherwise, the chunks will be lists.
 
     `config` defaults to
@@ -85,7 +85,7 @@ class CsvImport(AbstractTableRowImport):
             'escapechar': None,
             'lineterminator': '\r\n',
             'quotechar': '"',
-            'quoting': csv.QUOTE_MINIMAL,
+            'quoting': 0,  # csv.QUOTE_MINIMAL
             'skipinitialspace': False,
         },
     }
