@@ -11,6 +11,7 @@
     'depends': [
         'connector',
         'queue_job',
+        'web',
     ],
     'external_dependencies': {
         'python': [
@@ -20,6 +21,7 @@
     },
     'data': [
         'security/ir.model.access.csv',
+        'views/assets_backend.xml',
         'views/menu.xml',  # first, because defines main menu
         'views/impexp_chunk_view.xml',
         'views/impexp_file_view.xml',

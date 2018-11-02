@@ -43,18 +43,20 @@
                         <page name="config" string="Configuration">
                             <div>
                                 <label for="config"/>
-                                <field name="config"/>
+                                <field name="config" class="o_source_code"/>
                             </div>
                         </page>
                         <page name="flow" string="Flow">
-                            <div>
-                                <label for="transitions_out_ids"/>
-                                <field name="transitions_out_ids"/>
-                            </div>
-                            <div>
-                                <label for="transitions_in_ids"/>
-                                <field name="transitions_in_ids"/>
-                            </div>
+                            <group>
+                                <div style="margin-right: 2em;">
+                                    <label for="transitions_out_ids"/>
+                                    <field name="transitions_out_ids"/>
+                                </div>
+                                <div>
+                                    <label for="transitions_in_ids"/>
+                                    <field name="transitions_in_ids"/>
+                                </div>
+                            </group>
                         </page>
                     </notebook>
                 </sheet>
