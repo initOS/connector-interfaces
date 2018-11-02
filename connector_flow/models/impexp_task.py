@@ -62,14 +62,11 @@ class ImpExpTaskFlow(models.Model):
     @api.multi
     def do_run(self, **kwargs):
         self.ensure_one()
-        start_task = False
-        for task in self.task_ids:
-            if task.flow_start:
-                start_task = task
-                break
-        if not start_task:
-            raise Exception("Flow #%d has no start" % self.id)
-        return start_task.do_run(**kwargs)
+        start_tasks = self.task_ids.filtered(lambda t: t.flow_start)
+        if len(start_tasks) != 1:
+            raise Exception("Flow #%d does not have a unique start; got %s"
+                            % (self.id, start_tasks.mapped(lambda t: t.name),))
+        return start_tasks.do_run(**kwargs)
 
 
 class ImpExpTask(models.Model):
