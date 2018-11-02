@@ -11,6 +11,7 @@
                 <field name="name"/>
                 <field name="task"/>
                 <field name="flow_id"/>
+                <field name="flow_start"/>
                 <field name="channel_id"/>
             </tree>
         </field>
