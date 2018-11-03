@@ -25,6 +25,8 @@
         'views/menu.xml',  # first, because defines main menu
         'views/impexp_chunk_view.xml',
         'views/impexp_file_view.xml',
+        'views/impexp_task_flow_view.xml',
+        'views/impexp_task_transition_view.xml',
         'views/impexp_task_view.xml',
         'wizards/run_task_view.xml',
     ],

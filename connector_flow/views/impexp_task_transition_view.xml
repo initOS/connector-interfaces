@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- impexp.task.transition -->
+
+    <record id="task_transition_form" model="ir.ui.view">
+        <field name="name">impexp.task.transition.form</field>
+        <field name="model">impexp.task.transition</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Task Transition Form">
+                <group>
+                    <field name="task_from_id"/>
+                    <field name="task_to_id"/>
+                </group>
+            </form>
+        </field>
+    </record>
+</odoo>

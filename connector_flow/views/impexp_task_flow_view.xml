@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- impexp.task.flow -->
+
+    <record id="task_flow_tree" model="ir.ui.view">
+        <field name="name">impexp.task.flow.tree</field>
+        <field name="model">impexp.task.flow</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree string="Task Flow Tree">
+                <field name="name"/>
+                <field name="task_ids"/>
+                <field name="channel_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="task_flow_form" model="ir.ui.view">
+        <field name="name">impexp.task.flow.form</field>
+        <field name="model">impexp.task.flow</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Task Flow Form">
+                <header>
+                    <button name="do_run" type="object" string="Run asynchronously" class="oe_highlight"/>
+                    <button name="do_run_sync" type="object" string="Run immediately" class="oe_highlight"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="channel_id"/>
+                        </group>
+                    </group>
+                    <div>
+                        <label for="task_ids"/>
+                        <field name="task_ids"/>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="task_flow_diagram" model="ir.ui.view">
+        <field name="name">impexp.task.flow.diagram</field>
+        <field name="model">impexp.task.flow</field>
+        <field name="type">diagram</field>
+        <field name="arch" type="xml">
+            <diagram string="Task Flow Diagram">
+                <node object="impexp.task" bgcolor="gray:flow_start==True">
+                    <field name="name"/>
+                    <field name="task"/>
+                    <field name="flow_start" invisible="1"/>
+                </node>
+                <arrow object="impexp.task.transition" source="task_from_id" destination="task_to_id">
+                    <field name="task_from_id"/>
+                    <field name="task_to_id"/>
+                </arrow>
+            </diagram>
+        </field>
+    </record>
+
+    <!-- menu and window actions -->
+
+    <record id="task_flow_view_action" model="ir.actions.act_window">
+        <field name="name">Task Flows</field>
+        <field name="res_model">impexp.task.flow</field>
+        <field name="view_mode">tree,diagram,form</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="task_flow_tree"/>
+        <field name="target">current</field>
+    </record>
+
+    <menuitem id="menu_impexp_task_flow"
+              name="Task Flows"
+              parent="menu_impexp_root"
+              sequence="10"
+              action="task_flow_view_action"/>
+</odoo>
