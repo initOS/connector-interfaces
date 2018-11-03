@@ -68,6 +68,11 @@ class ImpExpTaskFlow(models.Model):
                             % (self.id, start_tasks.mapped(lambda t: t.name),))
         return start_tasks.do_run(**kwargs)
 
+    @api.multi
+    def do_run_sync(self, **kwargs):
+        kwargs['asynch'] = False
+        self.do_run(**kwargs)
+
 
 class ImpExpTask(models.Model):
     _name = "impexp.task"
