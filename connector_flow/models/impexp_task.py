@@ -119,6 +119,19 @@ class ImpExpTask(models.Model):
         return True
 
     @api.multi
+    def do_run_sync(self, **kwargs):
+        kwargs['asynch'] = False
+        self.do_run(**kwargs)
+
+    @api.multi
+    def do_run_flow(self, **kwargs):
+        self.flow_id.do_run(**kwargs)
+
+    @api.multi
+    def do_run_flow_sync(self, **kwargs):
+        self.flow_id.do_run_sync(**kwargs)
+
+    @api.multi
     def get_task_instance(self):
         self.ensure_one()
         task_method = self.task

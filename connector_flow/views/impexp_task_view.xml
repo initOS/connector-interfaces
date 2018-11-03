@@ -23,6 +23,12 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
             <form string="Task Form">
+                <header>
+                    <button name="do_run_flow" type="object" string="Run Flow asynchronously" class="oe_highlight"/>
+                    <button name="do_run_flow_sync" type="object" string="Run Flow immediately" class="oe_highlight"/>
+                    <button name="do_run" type="object" string="Run Task asynchronously" class="oe_highlight"/>
+                    <button name="do_run_sync" type="object" string="Run Task immediately" class="oe_highlight"/>
+                </header>
                 <sheet>
                     <div class="oe_title">
                         <label for="name" class="oe_edit_only"/>
