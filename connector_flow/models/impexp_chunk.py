@@ -26,6 +26,7 @@ class ImpExpChunk(models.Model):
     )
     file_id = fields.Many2one(
         'impexp.file',
+        string="File",
         readonly=True,
     )
     task_id = fields.Many2one(
